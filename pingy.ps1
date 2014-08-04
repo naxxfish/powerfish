@@ -1,5 +1,5 @@
 # Ping Monitor
-# Chris Roberts <chris.roberts1@bbc.co.uk>
+# Chris Roberts <chris@naxxfish.eu>
 #
 # This script pings a host continually - but only marks when the host stops respoding to pings (DOWN) and then starts again (UP).  
 #
