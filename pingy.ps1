@@ -70,7 +70,7 @@ while($true)
 		$sndfile = "$ScriptRoot\sounds\ping.wav"
 		if ($isup) { 
 			Write-Host "." -NoNewline -BackgroundColor DarkGreen -ForegroundColor White
-			$sndfile ="$ScriptRoot\ping.wav";
+			$sndfile ="$ScriptRoot\sounds\ping.wav";
 		} else { 
 			Write-Host "x" -NoNewline -BackgroundColor DarkRed -ForegroundColor White
 			$sndfile="$ScriptRoot\sounds\error.wav";
