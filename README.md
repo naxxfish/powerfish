@@ -22,3 +22,11 @@ Usage:
 Uses FileSystemWatcher to watch a directory for changes.  
 
 Why? It's handy when you're debugging some sort of interface that uses the fileystem as a method of transferring messages / work. 
+
+pinglist.ps1
+------------
+
+Usage:
+	.\pinglist.ps1 fileWithHosts.txt [-Quiet]
+	
+Pings a list of hosts (line seperated in file fileWithHosts.txt), and tells you that they're all up - or that they're not. Goes ping if they're all up, buzzes if one or more are down.
