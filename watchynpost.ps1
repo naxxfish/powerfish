@@ -8,7 +8,7 @@
 param([string]$Folder)
 Write-Host "Directory Watcher"
 
-$url = "http://naxx.fish/hello" # REPLACE THIS WITH YOUR PATH!
+$global:url = "http://zinc.naxxfish.net:9615/thingy" # REPLACE THIS WITH YOUR PATH!
 
 if (-not($Folder))
 {
@@ -27,27 +27,22 @@ Get-EventSubscriber | Unregister-Event | out-null
 $fsw = New-Object IO.FileSystemWatcher $Folder, $filter -Property @{IncludeSubdirectories = $true;NotifyFilter = [IO.NotifyFilters]'FileName, LastWrite'} 
 
 Write-Host "Registering FileSystemWatcher to watch for new files in $Folder" -BackgroundColor DarkGreen -ForegroundColor White
-
+$client = New-Object System.Net.WebClient
+Add-Type -AssemblyName System.Web	
 Register-ObjectEvent $fsw Changed -SourceIdentifier FileChanged -Action { 
 	$name = $Event.SourceEventArgs.Name 
 	$changeType = $Event.SourceEventArgs.ChangeType 
-	Write-Host $name
-	Write-Host  "$global:folder\$name"
 	$timeStamp = $Event.TimeGenerated
-	$content = "filename=$name&data=" + [System.Web.HttpUtility]::UrlEncode(Get-Content "$global:folder\$name")
-	
-	$parameters =  $content	# your POST parameters
-	Write-Host $content
-	
-	$http_request = New-Object -ComObject Msxml2.XMLHTTP
-	$http_request.open('POST', $url, $false)
-	$http_request.setRequestHeader("Content-type",
-	"application/x-www-form-urlencoded")
-	$http_request.setRequestHeader("Content-length", $parameters.length)
-	$http_request.setRequestHeader("Connection", "close")
-	$http_request.send($parameters)
-	$http_request.statusText
-	Write-Host $http_request.statusText
+	$filecontent = Get-Content "$global:folder\$name"
+	Write-Host $filecontent
+	Write-Host "hello"
+	$requestParams = "filename=$name&data=", [System.Web.HttpUtility]::UrlEncode($filecontent)
+	Write-Host "Params: $requestParams"
+
+
+	Write-Host "Sending to $global:url"
+	$result = $client.UploadString($global:url,$requestParams)
+	$result
 }  | out-null
 
 
