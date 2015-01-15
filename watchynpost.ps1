@@ -39,12 +39,9 @@ Register-ObjectEvent $fsw Changed -SourceIdentifier FileChanged -Action {
 	$timeStamp = $Event.TimeGenerated
 	$filecontent = Get-Content "$global:folder\$name"
 	$filecontent = [System.Web.HttpUtility]::UrlEncode($filecontent)
-	Write-Host $filecontent
-	Write-Host "hello"
 	$requestParams = "filename=$name&data=$filecontent"
+	Write-Host "HTT POST to $global:url"
 	Write-Host "Params: $requestParams"
-
-	Write-Host "Sending to $global:url"
 	$result = $client.UploadString($global:url,$requestParams)
 	$result
 }  | out-null
