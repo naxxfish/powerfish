@@ -37,13 +37,11 @@ $fsw = New-Object IO.FileSystemWatcher $Folder, $Filter -Property @{IncludeSubdi
 Write-Host "Registering FileSystemWatcher to watch for new files in $Folder" -BackgroundColor DarkGreen -ForegroundColor White
 
 Add-Type -AssemblyName System.Web
-
-Register-ObjectEvent $fsw Changed -SourceIdentifier FileChanged -Action { 
+function global:UploadFile([string]$name)
+{
 	try {
 		$client = New-Object System.Net.WebClient
-		$name = $Event.SourceEventArgs.Name 
-		$changeType = $Event.SourceEventArgs.ChangeType 
-		$timeStamp = $Event.TimeGenerated
+		# Write-Host $name
 		$filecontent = Get-Content "$global:folder\$name"
 		$filecontent = [System.Web.HttpUtility]::UrlEncode($filecontent)
 		$requestParams = "filename=$name&data=$filecontent"
@@ -57,6 +55,20 @@ Register-ObjectEvent $fsw Changed -SourceIdentifier FileChanged -Action {
 		Write-Host $_.GetType().FullName
 		Write-Host $_.Exception.Message
 	}
+}
+# Trigger on file modification
+Register-ObjectEvent $fsw Changed -SourceIdentifier FileChanged -Action { 
+		UploadFile($Event.SourceEventArgs.Name)
+		$changeType = $Event.SourceEventArgs.ChangeType 
+		$timeStamp = $Event.TimeGenerated
+		
+}  | out-null
+# Trigger on file renaming (ehh...)
+Register-ObjectEvent $fsw Renamed -Action { 
+		UploadFile($Event.SourceEventArgs.Name)
+		$changeType = $Event.SourceEventArgs.ChangeType 
+		$timeStamp = $Event.TimeGenerated
+		
 }  | out-null
 
 

@@ -42,4 +42,4 @@ When a "changed" event is fired, it will make a HTTP post to the parameter suppl
 
 The parameters are "filename" and "data" - which are what you might expect them to be ! 
 
-Useful for applications which write files 
+Useful for applications which write files as a form of sending an update!
