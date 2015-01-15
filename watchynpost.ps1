@@ -43,7 +43,8 @@ Register-ObjectEvent $fsw Changed -SourceIdentifier FileChanged -Action {
 	Write-Host "HTT POST to $global:url"
 	Write-Host "Params: $requestParams"
 	$result = $client.UploadString($global:url,$requestParams)
-	$result
+	Write-Host "Done"
+	$True
 }  | out-null
 
 
