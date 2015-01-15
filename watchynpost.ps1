@@ -5,7 +5,11 @@
 #
 # Usage: .\watchynpost.ps1 -Folder <folder to watch>
 #
-param([string]$Folder)
+param(
+	[string]$Folder, 
+	[string]$Filter="*"
+)
+
 Write-Host "Directory Watcher"
 
 $global:url = "http://zinc.naxxfish.net:9615/thingy" # REPLACE THIS WITH YOUR PATH!
@@ -14,7 +18,6 @@ if (-not($Folder))
 {
 	$Folder = Read-Host -Prompt "Enter the path you wish to monitor for changes"
 }
-$filter = "*"
 
 if ( -not (Test-Path $Folder)) {
     Write-Host "Not a valid path D:" -BackgroundColor Red -ForegroundColor White
@@ -24,7 +27,7 @@ $global:folder = $Folder
 # remove all existing events
 Get-EventSubscriber | Unregister-Event | out-null
 
-$fsw = New-Object IO.FileSystemWatcher $Folder, $filter -Property @{IncludeSubdirectories = $true;NotifyFilter = [IO.NotifyFilters]'FileName, LastWrite'} 
+$fsw = New-Object IO.FileSystemWatcher $Folder, $Filter -Property @{IncludeSubdirectories = $true;NotifyFilter = [IO.NotifyFilters]'FileName, LastWrite'} 
 
 Write-Host "Registering FileSystemWatcher to watch for new files in $Folder" -BackgroundColor DarkGreen -ForegroundColor White
 $client = New-Object System.Net.WebClient
