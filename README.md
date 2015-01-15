@@ -31,3 +31,15 @@ Uses FileSystemWatcher to watch a directory for changes.
 
 Why? It's handy when you're debugging some sort of interface that uses the fileystem as a method of transferring messages / work. 
 
+
+watchynpost.ps1
+---------------
+
+Usage:
+    `.\watchynpost.ps1 -Folder <folder to watch> -Filter <filename filter> -Url http://where.you.want.it.to/go `
+
+When a "changed" event is fired, it will make a HTTP post to the parameter supplied in -Url.  It will read the contents of the file that has changed, URL encode it and send it as a HTTP POST parameter.
+
+The parameters are "filename" and "data" - which are what you might expect them to be ! 
+
+Useful for applications which write files 
