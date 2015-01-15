@@ -3,12 +3,12 @@
 #
 # This watches a directory using FileSystemWatcher and splurges out events whenever they happen.
 #
-# Usage: .\watchy.ps1 -Folder <folder to watch>
+# Usage: .\watchynpost.ps1 -Folder <folder to watch>
 #
 param([string]$Folder)
 Write-Host "Directory Watcher"
 
-$url = "http://chris.catnap.in/feed/tester"
+$url = "http://naxx.fish/hello" # REPLACE THIS WITH YOUR PATH!
 
 if (-not($Folder))
 {
@@ -34,7 +34,7 @@ Register-ObjectEvent $fsw Changed -SourceIdentifier FileChanged -Action {
 	Write-Host $name
 	Write-Host  "$global:folder\$name"
 	$timeStamp = $Event.TimeGenerated
-	$content = Get-Content "$global:folder\$name"
+	$content = "filename=$name&data=" + [System.Web.HttpUtility]::UrlEncode(Get-Content "$global:folder\$name")
 	
 	$parameters =  $content	# your POST parameters
 	Write-Host $content
