@@ -7,12 +7,13 @@
 #
 param(
 	[string]$Folder, 
-	[string]$Filter="*"
+	[string]$Filter="*",
+	[string]$Url = "http://zinc.naxxfish.net:9615/thingy" # might want to change this..
 )
 
 Write-Host "Directory Watcher"
 
-$global:url = "http://zinc.naxxfish.net:9615/thingy" # REPLACE THIS WITH YOUR PATH!
+$global:url = $Url
 
 if (-not($Folder))
 {
@@ -37,11 +38,11 @@ Register-ObjectEvent $fsw Changed -SourceIdentifier FileChanged -Action {
 	$changeType = $Event.SourceEventArgs.ChangeType 
 	$timeStamp = $Event.TimeGenerated
 	$filecontent = Get-Content "$global:folder\$name"
+	$filecontent = [System.Web.HttpUtility]::UrlEncode($filecontent)
 	Write-Host $filecontent
 	Write-Host "hello"
-	$requestParams = "filename=$name&data=", [System.Web.HttpUtility]::UrlEncode($filecontent)
+	$requestParams = "filename=$name&data=$filecontent"
 	Write-Host "Params: $requestParams"
-
 
 	Write-Host "Sending to $global:url"
 	$result = $client.UploadString($global:url,$requestParams)
