@@ -1,20 +1,24 @@
 # Directory Monitor
 # Chris Roberts <chris@naxxfish.eu>
 #
-# This watches a directory using FileSystemWatcher and splurges out events whenever they happen.
+# This watches a directory using FileSystemWatcher and HTTP post the contents of the file (urlencoded)
 #
-# Usage: .\watchynpost.ps1 -Folder <folder to watch>
+# Usage: .\watchynpost.ps1 -Folder <folder to watch> -Filter <filename filter> -Url http://where.you.want.it.to/go 
 #
+# the HTTP POST parameters are "filename" and "data" - which are what you might expect them to be :)
 param(
 	[string]$Folder, 
-	[string]$Filter="*",
-	[string]$Url = "http://zinc.naxxfish.net:9615/thingy" # might want to change this..
+	[string]$Url,
+	[string]$Filter="*"
 )
 
 Write-Host "Directory Watcher"
 
 $global:url = $Url
-
+if (-not($Url))
+{
+	$Url = Read-Host -Prompt "Enter the URL you want to HTTP POST to"
+}
 if (-not($Folder))
 {
 	$Folder = Read-Host -Prompt "Enter the path you wish to monitor for changes"
@@ -33,7 +37,7 @@ $fsw = New-Object IO.FileSystemWatcher $Folder, $Filter -Property @{IncludeSubdi
 Write-Host "Registering FileSystemWatcher to watch for new files in $Folder" -BackgroundColor DarkGreen -ForegroundColor White
 
 Add-Type -AssemblyName System.Web
-Add-Type -AssemblyName System
+
 Register-ObjectEvent $fsw Changed -SourceIdentifier FileChanged -Action { 
 	try {
 		$client = New-Object System.Net.WebClient
