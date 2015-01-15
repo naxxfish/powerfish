@@ -37,6 +37,7 @@ $fsw = New-Object IO.FileSystemWatcher $Folder, $Filter -Property @{IncludeSubdi
 Write-Host "Registering FileSystemWatcher to watch for new files in $Folder" -BackgroundColor DarkGreen -ForegroundColor White
 
 Add-Type -AssemblyName System.Web
+
 function global:UploadFile([string]$name)
 {
 	try {
@@ -56,6 +57,7 @@ function global:UploadFile([string]$name)
 		Write-Host $_.Exception.Message
 	}
 }
+
 # Trigger on file modification
 Register-ObjectEvent $fsw Changed -SourceIdentifier FileChanged -Action { 
 		UploadFile($Event.SourceEventArgs.Name)
@@ -63,14 +65,14 @@ Register-ObjectEvent $fsw Changed -SourceIdentifier FileChanged -Action {
 		$timeStamp = $Event.TimeGenerated
 		
 }  | out-null
+
 # Trigger on file renaming (ehh...)
-Register-ObjectEvent $fsw Renamed -Action { 
+Register-ObjectEvent $fsw Renamed -SourceIdentifier RenamedEvent -Action { 
 		UploadFile($Event.SourceEventArgs.Name)
 		$changeType = $Event.SourceEventArgs.ChangeType 
 		$timeStamp = $Event.TimeGenerated
 		
 }  | out-null
-
 
 try {
 	while (Wait-event File*) {
