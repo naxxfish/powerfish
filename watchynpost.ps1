@@ -39,7 +39,11 @@ Write-Host "Registering FileSystemWatcher to watch for new files in $Folder" -Ba
 Add-Type -AssemblyName System.Web
 
 function global:UploadFile([string]$name)
-{
+{	
+	if ($name -contains "tmp")
+	{
+		return
+	}
 	try {
 		$client = New-Object System.Net.WebClient
 		# Write-Host $name
