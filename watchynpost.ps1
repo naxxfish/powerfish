@@ -37,7 +37,7 @@ $fsw = New-Object IO.FileSystemWatcher $Folder, $Filter -Property @{IncludeSubdi
 Write-Host "Registering FileSystemWatcher to watch for new files in $Folder" -BackgroundColor DarkGreen -ForegroundColor White
 
 Add-Type -AssemblyName System.Web
-
+Add-Type -AssemblyName System.Collections
 function global:UploadFile([string]$name)
 {	
 	if ($name -contains "tmp")
@@ -49,10 +49,12 @@ function global:UploadFile([string]$name)
 		# Write-Host $name
 		$filecontent = Get-Content "$global:folder\$name"
 		$filecontent = [System.Web.HttpUtility]::UrlEncode($filecontent)
-		$requestParams = "filename=$name&data=$filecontent"
+		$requestParams = New-Object System.Collections.Specialized.NameValueCollection
+		$requestParams.add("filename",$name)
+		$requestParams.add("data",$filecontent)
 		Write-Host "HTTP POST to $global:url"
 		Write-Host "Params: $requestParams"
-		$result = $client.UploadString($global:url,$requestParams)
+		$result = $client.UploadValues($global:url,"POST",$requestParams)
 		Write-Host "Done $result"
 		$client = $null
 	} catch [Exception]
