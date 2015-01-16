@@ -37,7 +37,7 @@ $fsw = New-Object IO.FileSystemWatcher $Folder, $Filter -Property @{IncludeSubdi
 Write-Host "Registering FileSystemWatcher to watch for new files in $Folder" -BackgroundColor DarkGreen -ForegroundColor White
 
 Add-Type -AssemblyName System.Web
-Add-Type -AssemblyName System.Collections
+
 function global:UploadFile([string]$name)
 {	
 	if ($name -contains "tmp")
