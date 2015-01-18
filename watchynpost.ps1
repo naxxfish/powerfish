@@ -52,32 +52,37 @@ function global:UploadFile([string]$name)
 		$requestParams = New-Object System.Collections.Specialized.NameValueCollection
 		$requestParams.add("filename",$name)
 		$requestParams.add("data",$filecontent)
-		Write-Host "HTTP POST to $global:url"
-		Write-Host "Params: $requestParams"
+		Write-Host -ForegroundColor yellow "HTTP POST to $global:url"
+		Write-Host "Filename: $name"
+		Write-Host "Size: ", $filecontent.Length , "bytes"
 		$result = $client.UploadValues($global:url,"POST",$requestParams)
-		Write-Host "Done $result"
+		$resultBody = [System.Text.Encoding]::ASCII.GetString($result)
+		Write-Host "Response: $resultBody"
+		Write-Host -ForegroundColor green "Done"
 		$client = $null
 	} catch [Exception]
 	{
-		Write-Host $_.GetType().FullName
-		Write-Host $_.Exception.Message
+		Write-Host -ForegroundColor Red $_.GetType().FullName
+		Write-Host -ForegroundColor Red $_.Exception.Message
 	}
 }
 
 # Trigger on file modification
 Register-ObjectEvent $fsw Changed -SourceIdentifier FileChanged -Action { 
-		UploadFile($Event.SourceEventArgs.Name)
 		$changeType = $Event.SourceEventArgs.ChangeType 
 		$timeStamp = $Event.TimeGenerated
-		
+		Write-Host "--------------------------------------"
+		Write-Host -Foregroundcolor Green "$timeStamp :: ", $changeType
+		UploadFile($Event.SourceEventArgs.Name)
 }  | out-null
 
 # Trigger on file renaming (ehh...)
 Register-ObjectEvent $fsw Renamed -SourceIdentifier RenamedEvent -Action { 
-		UploadFile($Event.SourceEventArgs.Name)
 		$changeType = $Event.SourceEventArgs.ChangeType 
 		$timeStamp = $Event.TimeGenerated
-		
+		Write-Host "--------------------------------------"
+		Write-Host -Foregroundcolor Green "$timeStamp :: ", $changeType
+		UploadFile($Event.SourceEventArgs.Name)
 }  | out-null
 
 try {
